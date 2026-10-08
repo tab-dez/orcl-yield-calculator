@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORCL^D Yield Calculator — Oracle Series D Mandatory Convertible Preferred</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root, [data-theme='dark'] {
+  --color-bg: #0B0E14;
+  --color-surface: #131822;
+  --color-surface-2: #1A1F2B;
+  --color-surface-offset: #1E2433;
+  --color-surface-dynamic: #252B3B;
+  --color-border: #2A3142;
+  --color-divider: #232938;
+  --color-text: #E2E5EE;
+  --color-text-muted: #8A90A4;
+  --color-text-faint: #5A6072;
+  --color-primary: #C74634;
+  --color-primary-hover: #E0563F;
+  --color-primary-highlight: #3A1E1A;
+  --color-success: #22C55E;
+  --color-success-highlight: #142920;
+  --color-error: #EF4444;
+  --color-error-highlight: #2A1414;
+  --color-blue: #3B82F6;
+  --color-blue-highlight: #14203A;
+  --color-gold: #F59E0B;
+  --color-gold-highlight: #2A2010;
+  --color-purple: #A855F7;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.35);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+  --font-display: 'Cabinet Grotesk', 'Inter', sans-serif;
+  --font-body: 'Satoshi', 'Inter', sans-serif;
+}
+
+[data-theme='light'] {
+  --color-bg: #F5F6F9;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F0F2F6;
+  --color-surface-offset: #E8EBF1;
+  --color-surface-dynamic: #DEE2EC;
+  --color-border: #D0D5E0;
+  --color-divider: #E0E4EC;
+  --color-text: #1A1D28;
+  --color-text-muted: #6B7280;
+  --color-text-faint: #9CA3AF;
+  --color-primary: #C74634;
+  --color-primary-hover: #A93A2A;
+  --color-primary-highlight: #FBEAE7;
+  --color-success: #16A34A;
+  --color-success-highlight: #DCFCE7;
+  --color-error: #DC2626;
+  --color-error-highlight: #FEE2E2;
+  --color-blue: #2563EB;
+  --color-blue-highlight: #DBEAFE;
+  --color-gold: #D97706;
+  --color-gold-highlight: #FEF3C7;
+  --color-purple: #9333EA;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; scroll-behavior: smooth; }
+body {
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; text-wrap: balance; }
+a { color: var(--color-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { cursor: pointer; background: none; border: none; font-family: inherit; }
+input, select { font-family: inherit; }
+.tabular { font-variant-numeric: tabular-nums lining-nums; }
+
+/* Layout */
+.container { max-width: 1280px; margin: 0 auto; padding: 0 var(--space-4, 1rem); }
+:root { --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem; --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --transition-interactive: 180ms cubic-bezier(0.16,1,0.3,1); }
+
+/* Header */
+header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.header-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+}
+.logo { display: flex; align-items: center; gap: var(--space-3); }
+.logo-mark {
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary), #8B2D1F);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 14px; color: #fff;
+  letter-spacing: -0.5px;
+}
+.logo-text { display: flex; flex-direction: column; line-height: 1.3; }
+.logo-title { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.logo-sub { font-size: 11px; color: var(--color-text-muted); }
+.header-actions { display: flex; align-items: center; gap: var(--space-3); }
+.theme-toggle {
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-text-muted); border: 1px solid var(--color-border);
+  background: var(--color-surface-2); transition: var(--transition-interactive);
+}
+.theme-toggle:hover { color: var(--color-text); border-color: var(--color-text-muted); }
+
+/* Main */
+main { padding: var(--space-6) var(--space-4) var(--space-16); max-width: 1280px; margin: 0 auto; }
+section { margin-bottom: var(--space-8); }
+.section-title { font-size: 1.125rem; font-weight: 700; margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2); }
+.section-title::before { content: ''; width: 3px; height: 18px; border-radius: 2px; background: var(--color-primary); }
+
+/* Cards */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+.card-title { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); margin-bottom: var(--space-4); }
+
+/* Security Info */
+.security-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-3); }
+.security-item {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+.security-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); margin-bottom: 2px; }
+.security-value { font-size: 0.9375rem; font-weight: 700; }
+
+/* Calculator Layout */
+.calc-grid { display: grid; grid-template-columns: 340px 1fr; gap: var(--space-6); align-items: start; }
+@media (max-width: 900px) { .calc-grid { grid-template-columns: 1fr; } }
+
+/* Inputs */
+.input-group { margin-bottom: var(--space-5); }
+.input-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-2); }
+.input-label-text { font-size: 0.8125rem; font-weight: 500; color: var(--color-text-muted); }
+.input-value { font-size: 1.125rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--color-text); }
+.input-value .unit { font-size: 0.75rem; font-weight: 400; color: var(--color-text-muted); margin-left: 2px; }
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: var(--color-surface-dynamic); outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--color-primary); cursor: pointer;
+  border: 3px solid var(--color-bg);
+  box-shadow: 0 0 0 1px var(--color-primary);
+  transition: transform 120ms ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--color-primary); cursor: pointer;
+  border: 3px solid var(--color-bg);
+}
+input[type="number"], input[type="date"] {
+  width: 100%; padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text); font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+input[type="number"]:focus, input[type="date"]:focus {
+  outline: none; border-color: var(--color-primary);
+}
+.range-row { display: flex; align-items: center; gap: var(--space-3); }
+.range-row input[type="number"] { width: 90px; flex-shrink: 0; }
+
+/* KPI Cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-6); }
+.kpi-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  position: relative; overflow: hidden;
+}
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--color-primary); opacity: 0.6; }
+.kpi-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); margin-bottom: var(--space-1); }
+.kpi-value { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.kpi-value.positive { color: var(--color-success); }
+.kpi-value.negative { color: var(--color-error); }
+.kpi-sub { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 2px; }
+
+/* Charts */
+.chart-container { position: relative; height: 340px; margin-top: var(--space-4); }
+.chart-container canvas { max-height: 340px; }
+
+/* Scenario Table */
+.table-wrap { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--color-border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+thead th {
+  background: var(--color-surface-2);
+  padding: var(--space-3) var(--space-3);
+  text-align: right;
+  font-weight: 600;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+thead th:first-child { text-align: left; }
+tbody td { padding: var(--space-3); text-align: right; font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--color-divider); white-space: nowrap; }
+tbody td:first-child { text-align: left; font-weight: 600; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--color-surface-2); }
+.positive-text { color: var(--color-success); }
+.negative-text { color: var(--color-error); }
+.highlight-row { background: var(--color-primary-highlight); }
+.highlight-row:hover { background: var(--color-primary-highlight); }
+
+/* Breakdown */
+.breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+@media (max-width: 700px) { .breakdown-grid { grid-template-columns: 1fr; } }
+.breakdown-item { display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) 0; border-bottom: 1px solid var(--color-divider); }
+.breakdown-item:last-child { border-bottom: none; }
+.breakdown-label { font-size: 0.8125rem; color: var(--color-text-muted); }
+.breakdown-value { font-size: 0.875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Zones */
+.zone-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.zone-lower { background: var(--color-error-highlight); color: var(--color-error); }
+.zone-middle { background: var(--color-gold-highlight); color: var(--color-gold); }
+.zone-upper { background: var(--color-success-highlight); color: var(--color-success); }
+
+/* Footer */
+footer { border-top: 1px solid var(--color-border); background: var(--color-surface); padding: var(--space-8) var(--space-4); }
+.footer-inner { max-width: 1280px; margin: 0 auto; }
+.footer-title { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); margin-bottom: var(--space-3); }
+.footer-text { font-size: 0.8125rem; color: var(--color-text-muted); line-height: 1.7; }
+.footer-text a { color: var(--color-blue); }
+.sources { display: flex; flex-direction: column; gap: var(--space-1); margin-top: var(--space-3); }
+.sources a { font-size: 0.8125rem; }
+.disclaimer { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-divider); font-size: 0.75rem; color: var(--color-text-faint); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .logo-sub { display: none; }
+  .security-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">ORCL</div>
+      <div class="logo-text">
+        <span class="logo-title">ORCL^D Yield Calculator</span>
+        <span class="logo-sub">Oracle Series D Mandatory Convertible Preferred</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Security Overview -->
+  <section>
+    <div class="card">
+      <div class="card-title">Security Terms — 6.50% Series D Mandatory Convertible Preferred Stock</div>
+      <div class="security-grid">
+        <div class="security-item">
+          <div class="security-label">Ticker</div>
+          <div class="security-value">ORCL^D / ORCL-PRD</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Liquidation Preference</div>
+          <div class="security-value tabular">$50.00 / depositary share</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Annual Dividend</div>
+          <div class="security-value tabular">$3.25 (6.50%)</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Dividend Frequency</div>
+          <div class="security-value">Quarterly</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Mandatory Conversion</div>
+          <div class="security-value">January 15, 2029</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Max Conversion Rate</div>
+          <div class="security-value tabular">0.3124 shares</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Min Conversion Rate</div>
+          <div class="security-value tabular">0.2499 shares</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Initial Price</div>
+          <div class="security-value tabular">$160.06</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Threshold Appreciation Price</div>
+          <div class="security-value tabular">$200.07</div>
+        </div>
+        <div class="security-item">
+          <div class="security-label">Averaging Period</div>
+          <div class="security-value">20-day VWAP</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculator -->
+  <section>
+    <div class="calc-grid">
+      <!-- Inputs -->
+      <div class="card">
+        <div class="card-title">Inputs</div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text">Purchase Price</span>
+            <span class="input-value tabular" id="pp-display">$40.00</span>
+          </div>
+          <div class="range-row">
+            <input type="range" id="purchase-price" min="30" max="60" step="0.50" value="40">
+            <input type="number" id="purchase-price-num" min="30" max="60" step="0.50" value="40" style="width: 80px;">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text">Annual Dividend</span>
+            <span class="input-value tabular" id="div-display">$3.25</span>
+          </div>
+          <div class="range-row">
+            <input type="range" id="annual-dividend" min="0" max="5" step="0.05" value="3.25">
+            <input type="number" id="annual-dividend-num" min="0" max="5" step="0.05" value="3.25" style="width: 80px;">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text">Conversion Date</span>
+          </div>
+          <input type="date" id="conversion-date" value="2029-01-15">
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text">Settlement / Valuation Date</span>
+          </div>
+          <input type="date" id="settlement-date" value="2026-10-03">
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text">ORCL Common Stock Price (Scenario)</span>
+            <span class="input-value tabular" id="sp-display">$180.00</span>
+          </div>
+          <div class="range-row">
+            <input type="range" id="stock-price" min="80" max="350" step="1" value="180">
+            <input type="number" id="stock-price-num" min="0" max="500" step="1" value="180" style="width: 80px;">
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-5); padding: var(--space-3); background: var(--color-surface-2); border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+          <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); margin-bottom: var(--space-2);">Conversion Zone</div>
+          <div id="zone-display"></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div>
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Current Yield</div>
+            <div class="kpi-value tabular" id="kpi-current-yield">8.13%</div>
+            <div class="kpi-sub" id="kpi-current-yield-sub">$3.25 / $40.00</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Years to Conversion</div>
+            <div class="kpi-value tabular" id="kpi-years">2.29</div>
+            <div class="kpi-sub" id="kpi-years-sub">to Jan 15, 2029</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total Dividends</div>
+            <div class="kpi-value tabular" id="kpi-dividends">$7.45</div>
+            <div class="kpi-sub" id="kpi-dividends-sub">over holding period</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Conversion Value</div>
+            <div class="kpi-value tabular" id="kpi-conv-value">$50.00</div>
+            <div class="kpi-sub" id="kpi-conv-value-sub">at $180.00/share</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Est. Annualized Return</div>
+            <div class="kpi-value tabular" id="kpi-total-return">21.95%</div>
+            <div class="kpi-sub" id="kpi-total-return-sub">CAGR, divs aggregated</div>
+          </div>
+        </div>
+
+        <!-- Scenario Breakdown -->
+        <div class="card" style="margin-bottom: var(--space-6);">
+          <div class="card-title">Scenario Breakdown — ORCL at $<span id="scenario-price">180.00</span></div>
+          <div class="breakdown-grid">
+            <div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Purchase Price</span>
+                <span class="breakdown-value tabular" id="bd-purchase">$40.00</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Conversion Rate</span>
+                <span class="breakdown-value tabular" id="bd-conv-rate">0.2778 sh</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Conversion Value</span>
+                <span class="breakdown-value tabular" id="bd-conv-value">$50.00</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Capital Gain / (Loss)</span>
+                <span class="breakdown-value tabular" id="bd-cap-gain">$10.00 (+25.00%)</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Annualized Capital Return</span>
+                <span class="breakdown-value tabular" id="bd-cap-annual">+10.01%</span>
+              </div>
+            </div>
+            <div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Current Yield</span>
+                <span class="breakdown-value tabular" id="bd-current-yield">8.13%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Simple Annualized Return</span>
+                <span class="breakdown-value tabular" id="bd-simple">18.14%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Total Dividends</span>
+                <span class="breakdown-value tabular" id="bd-dividends">$7.45</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Total Return (incl. dividends)</span>
+                <span class="breakdown-value tabular" id="bd-total-return">42.86%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">Est. Annualized Return (CAGR)</span>
+                <span class="breakdown-value tabular" id="bd-cagr">21.95%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payoff Diagram -->
+        <div class="card" style="margin-bottom: var(--space-6);">
+          <div class="card-title">Conversion Value vs. ORCL Common Stock Price</div>
+          <div class="chart-container">
+            <canvas id="payoffChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Return Chart -->
+        <div class="card" style="margin-bottom: var(--space-6);">
+          <div class="card-title">Annualized Total Return vs. ORCL Common Stock Price</div>
+          <div class="chart-container">
+            <canvas id="returnChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Scenario Table -->
+        <div class="card">
+          <div class="card-title">Scenario Analysis Table</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ORCL Price</th>
+                  <th>Conv. Rate</th>
+                  <th>Conv. Value</th>
+                  <th>Cap. Gain</th>
+                  <th>Cap. Gain %</th>
+                  <th>Ann. Cap. Return</th>
+                  <th>Total Dividends</th>
+                  <th>Total Return %</th>
+                  <th>Ann. Total Return</th>
+                </tr>
+              </thead>
+              <tbody id="scenario-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">Sources & References</div>
+    <div class="footer-text">
+      Conversion terms, dividend rate, liquidation preference, and mandatory conversion date sourced from Oracle Corporation's SEC filings and prospectus supplement:
+    </div>
+    <div class="sources">
+      <a href="https://www.sec.gov/Archives/edgar/data/1341439/000119312526039344/d63638d8k.htm">SEC Form 8-K — Oracle Corporation (February 2, 2026)</a>
+      <a href="https://www.sec.gov/Archives/edgar/data/1341439/000119312526034351/d24013dfwp.htm">SEC FWP — Preliminary Prospectus Supplement</a>
+      <a href="https://www.sec.gov/Archives/edgar/data/1341439/000119312526101045/orcl-20260228.htm">SEC 10-Q — Oracle Corporation (Quarterly Report)</a>
+      <a href="https://www.sec.gov/Archives/edgar/data/1341439/000119312526277521/R21.htm">SEC Filing — Mandatory Convertible Preferred Stock Terms</a>
+      <a href="https://www.quantumonline.com/search.cfm?tickersymbol=ORCL-D&sopt=symbol">QuantumOnline — ORCL-D Security Details</a>
+    </div>
+    <div class="disclaimer">
+      This calculator is for educational and illustrative purposes only. It does not constitute investment advice or a recommendation to buy, sell, or hold any security. Calculations use simplified assumptions: dividends are modeled as a lump sum at conversion (actual dividends are paid quarterly and may be reinvested); the conversion stock price represents the 20-day VWAP at conversion, not a spot price; anti-dilution adjustments are not modeled. Actual returns will differ. Consult a licensed financial advisor before making investment decisions. Oracle Corporation is not affiliated with this tool.
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// ORCL^D Constants (from SEC filings)
+// ═══════════════════════════════════════════════════════════════
+const LIQ_PREF = 50.00;                          // $50 per depositary share
+const MAX_CONV_RATE = 624.7657 / 2000;           // 0.31238285 — when stock <= initial price
+const MIN_CONV_RATE = 499.8126 / 2000;           // 0.2499063  — when stock >= TAP
+const INITIAL_PRICE = LIQ_PREF / MAX_CONV_RATE;  // ~$160.06
+const TAP = LIQ_PREF / MIN_CONV_RATE;            // ~$200.08
+
+// ═══════════════════════════════════════════════════════════════
+// Calculation Engine
+// ═══════════════════════════════════════════════════════════════
+function getConversionRate(stockPrice) {
+  if (stockPrice <= INITIAL_PRICE) return MAX_CONV_RATE;
+  if (stockPrice >= TAP) return MIN_CONV_RATE;
+  return LIQ_PREF / stockPrice;
+}
+
+function getConversionValue(stockPrice) {
+  return getConversionRate(stockPrice) * stockPrice;
+}
+
+function getZone(stockPrice) {
+  if (stockPrice <= INITIAL_PRICE) return 'lower';
+  if (stockPrice >= TAP) return 'upper';
+  return 'middle';
+}
+
+function getZoneInfo(stockPrice) {
+  const zone = getZone(stockPrice);
+  if (zone === 'lower') {
+    return { label: 'Max Conversion (Downside Exposure)', cls: 'zone-lower',
+      desc: `Stock ≤ $${INITIAL_PRICE.toFixed(2)} — converts at max rate of ${MAX_CONV_RATE.toFixed(4)} shares (value declines with stock price)` };
+  }
+  if (zone === 'upper') {
+    return { label: 'Min Conversion (Upside Participation)', cls: 'zone-upper',
+      desc: `Stock ≥ $${TAP.toFixed(2)} — converts at min rate of ${MIN_CONV_RATE.toFixed(4)} shares` };
+  }
+  return { label: 'Fixed Value (Middle Zone)', cls: 'zone-middle',
+    desc: `Between $${INITIAL_PRICE.toFixed(2)}–$${TAP.toFixed(2)} — converts at $50 / share price` };
+}
+
+function parseDateLocal(value) {
+  const [y, m, d] = value.split('-').map(Number);
+  return new Date(y, m - 1, d, 12, 0, 0);
+}
+
+function yearsBetween(date1, date2) {
+  const ms = Math.abs(date2 - date1);
+  return ms / (365.25 * 24 * 60 * 60 * 1000);
+}
+
+function calculate(purchasePrice, annualDividend, conversionDate, settlementDate, stockPrice) {
+  const years = yearsBetween(settlementDate, conversionDate);
+  const currentYield = annualDividend / purchasePrice;
+  const convRate = getConversionRate(stockPrice);
+  const convValue = getConversionValue(stockPrice);
+  const capitalGain = convValue - purchasePrice;
+  const capitalGainPct = capitalGain / purchasePrice;
+  const totalDividends = annualDividend * years;
+  const totalReturn = (convValue + totalDividends - purchasePrice) / purchasePrice;
+
+  // Annualized capital return (CAGR of capital component)
+  const annCapReturn = convValue > 0 ? Math.pow(convValue / purchasePrice, 1 / years) - 1 : 0;
+
+  // Simple annualized return
+  const simpleAnnual = currentYield + annCapReturn;
+
+  // Total annualized return (CAGR including dividends as lump sum at end)
+  const totalAnnual = Math.pow((convValue + totalDividends) / purchasePrice, 1 / years) - 1;
+
+  return {
+    purchasePrice, annualDividend, years, stockPrice,
+    currentYield, convRate, convValue, capitalGain, capitalGainPct,
+    totalDividends, totalReturn, annCapReturn, simpleAnnual, totalAnnual
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Formatting
+// ═══════════════════════════════════════════════════════════════
+const fmt = {
+  money: v => '$' + v.toFixed(2),
+  pct: v => (v * 100).toFixed(2) + '%',
+  pctSigned: v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%',
+  moneySigned: v => (v >= 0 ? '+' : '') + '$' + Math.abs(v).toFixed(2),
+  shares: v => v.toFixed(4) + ' sh',
+  years: v => v.toFixed(2) + ' yrs'
+};
+
+// ═══════════════════════════════════════════════════════════════
+// DOM References
+// ═══════════════════════════════════════════════════════════════
+const els = {
+  pp: document.getElementById('purchase-price'),
+  ppNum: document.getElementById('purchase-price-num'),
+  ppDisplay: document.getElementById('pp-display'),
+  div: document.getElementById('annual-dividend'),
+  divNum: document.getElementById('annual-dividend-num'),
+  divDisplay: document.getElementById('div-display'),
+  convDate: document.getElementById('conversion-date'),
+  settleDate: document.getElementById('settlement-date'),
+  sp: document.getElementById('stock-price'),
+  spNum: document.getElementById('stock-price-num'),
+  spDisplay: document.getElementById('sp-display'),
+  zone: document.getElementById('zone-display'),
+  scenarioPrice: document.getElementById('scenario-price'),
+  // KPIs
+  kpiYield: document.getElementById('kpi-current-yield'),
+  kpiYieldSub: document.getElementById('kpi-current-yield-sub'),
+  kpiYears: document.getElementById('kpi-years'),
+  kpiYearsSub: document.getElementById('kpi-years-sub'),
+  kpiDivs: document.getElementById('kpi-dividends'),
+  kpiDivsSub: document.getElementById('kpi-dividends-sub'),
+  kpiConv: document.getElementById('kpi-conv-value'),
+  kpiConvSub: document.getElementById('kpi-conv-value-sub'),
+  kpiReturn: document.getElementById('kpi-total-return'),
+  kpiReturnSub: document.getElementById('kpi-total-return-sub'),
+  // Breakdown
+  bdPurchase: document.getElementById('bd-purchase'),
+  bdConvRate: document.getElementById('bd-conv-rate'),
+  bdConvValue: document.getElementById('bd-conv-value'),
+  bdCapGain: document.getElementById('bd-cap-gain'),
+  bdCapAnnual: document.getElementById('bd-cap-annual'),
+  bdCurrentYield: document.getElementById('bd-current-yield'),
+  bdSimple: document.getElementById('bd-simple'),
+  bdDividends: document.getElementById('bd-dividends'),
+  bdTotalReturn: document.getElementById('bd-total-return'),
+  bdCagr: document.getElementById('bd-cagr'),
+  // Table
+  tbody: document.getElementById('scenario-tbody')
+};
+
+// ═══════════════════════════════════════════════════════════════
+// Charts
+// ═══════════════════════════════════════════════════════════════
+let payoffChart, returnChart;
+
+function getChartColors() {
+  const styles = getComputedStyle(document.documentElement);
+  return {
+    text: styles.getPropertyValue('--color-text').trim(),
+    muted: styles.getPropertyValue('--color-text-muted').trim(),
+    border: styles.getPropertyValue('--color-border').trim(),
+    primary: styles.getPropertyValue('--color-primary').trim(),
+    success: styles.getPropertyValue('--color-success').trim(),
+    error: styles.getPropertyValue('--color-error').trim(),
+    gold: styles.getPropertyValue('--color-gold').trim(),
+    blue: styles.getPropertyValue('--color-blue').trim(),
+    surface: styles.getPropertyValue('--color-surface').trim(),
+    divider: styles.getPropertyValue('--color-divider').trim()
+  };
+}
+
+function buildPayoffData(purchasePrice) {
+  const prices = [];
+  const values = [];
+  for (let p = 80; p <= 350; p += 2) {
+    prices.push(p);
+    values.push(getConversionValue(p));
+  }
+  return { prices, values };
+}
+
+function buildReturnData(purchasePrice, annualDividend, convDate, settleDate) {
+  const prices = [];
+  const returns = [];
+  for (let p = 80; p <= 350; p += 2) {
+    prices.push(p);
+    const r = calculate(purchasePrice, annualDividend, convDate, settleDate, p);
+    returns.push(r.totalAnnual * 100);
+  }
+  return { prices, returns };
+}
+
+function initPayoffChart() {
+  const c = getChartColors();
+  const ctx = document.getElementById('payoffChart').getContext('2d');
+  const pp = parseFloat(els.pp.value);
+  const { prices, values } = buildPayoffData(pp);
+
+  payoffChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: prices,
+      datasets: [
+        {
+          label: 'Conversion Value',
+          data: values,
+          borderColor: c.primary,
+          backgroundColor: c.primary + '15',
+          borderWidth: 2.5,
+          fill: true,
+          pointRadius: 0,
+          tension: 0
+        },
+        {
+          label: 'Purchase Price',
+          data: prices.map(() => pp),
+          borderColor: c.blue,
+          borderWidth: 1.5,
+          borderDash: [6, 4],
+          fill: false,
+          pointRadius: 0
+        },
+        {
+          label: 'Liquidation Preference ($50)',
+          data: prices.map(() => 50),
+          borderColor: c.gold + '80',
+          borderWidth: 1,
+          borderDash: [3, 3],
+          fill: false,
+          pointRadius: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: { color: c.muted, font: { size: 11 }, usePointStyle: true, padding: 16 }
+        },
+        tooltip: {
+          callbacks: {
+            title: items => 'ORCL: $' + items[0].label,
+            label: ctx => ctx.dataset.label + ': $' + ctx.parsed.y.toFixed(2)
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'ORCL Common Stock Price ($)', color: c.muted, font: { size: 11 } },
+          ticks: {
+            color: c.muted, font: { size: 10 },
+            callback: function(v, i) { return '$' + this.getLabelForValue(v); },
+            maxTicksLimit: 12
+          },
+          grid: { color: c.divider }
+        },
+        y: {
+          title: { display: true, text: 'Value per Depositary Share ($)', color: c.muted, font: { size: 11 } },
+          ticks: { color: c.muted, font: { size: 10 }, callback: v => '$' + v },
+          grid: { color: c.divider }
+        }
+      }
+    }
+  });
+}
+
+function initReturnChart() {
+  const c = getChartColors();
+  const ctx = document.getElementById('returnChart').getContext('2d');
+  const pp = parseFloat(els.pp.value);
+  const div = parseFloat(els.div.value);
+  const convDate = parseDateLocal(els.convDate.value);
+  const settleDate = parseDateLocal(els.settleDate.value);
+  const { prices, returns } = buildReturnData(pp, div, convDate, settleDate);
+
+  returnChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: prices,
+      datasets: [{
+        label: 'Est. Annualized Return (CAGR)',
+        data: returns,
+        borderColor: c.success,
+        backgroundColor: c.success + '15',
+        borderWidth: 2.5,
+        fill: true,
+        pointRadius: 0,
+        tension: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: { color: c.muted, font: { size: 11 }, usePointStyle: true, padding: 16 }
+        },
+        tooltip: {
+          callbacks: {
+            title: items => 'ORCL: $' + items[0].label,
+            label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) + '%'
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'ORCL Common Stock Price ($)', color: c.muted, font: { size: 11 } },
+          ticks: {
+            color: c.muted, font: { size: 10 },
+            callback: function(v, i) { return '$' + this.getLabelForValue(v); },
+            maxTicksLimit: 12
+          },
+          grid: { color: c.divider }
+        },
+        y: {
+          title: { display: true, text: 'Annualized Total Return (%)', color: c.muted, font: { size: 11 } },
+          ticks: { color: c.muted, font: { size: 10 }, callback: v => v.toFixed(0) + '%' },
+          grid: { color: c.divider }
+        }
+      }
+    }
+  });
+}
+
+function updateCharts() {
+  const c = getChartColors();
+  const pp = parseFloat(els.pp.value);
+  const div = parseFloat(els.div.value);
+  const convDate = parseDateLocal(els.convDate.value);
+  const settleDate = parseDateLocal(els.settleDate.value);
+
+  // Payoff chart
+  const { prices, values } = buildPayoffData(pp);
+  payoffChart.data.labels = prices;
+  payoffChart.data.datasets[0].data = values;
+  payoffChart.data.datasets[1].data = prices.map(() => pp);
+  payoffChart.data.datasets[0].borderColor = c.primary;
+  payoffChart.data.datasets[0].backgroundColor = c.primary + '15';
+  payoffChart.data.datasets[1].borderColor = c.blue;
+  payoffChart.data.datasets[2].borderColor = c.gold + '80';
+  payoffChart.options.scales.x.ticks.color = c.muted;
+  payoffChart.options.scales.x.title.color = c.muted;
+  payoffChart.options.scales.x.grid.color = c.divider;
+  payoffChart.options.scales.y.ticks.color = c.muted;
+  payoffChart.options.scales.y.title.color = c.muted;
+  payoffChart.options.scales.y.grid.color = c.divider;
+  payoffChart.options.plugins.legend.labels.color = c.muted;
+  payoffChart.update('none');
+
+  // Return chart
+  const { prices: rp, returns } = buildReturnData(pp, div, convDate, settleDate);
+  returnChart.data.labels = rp;
+  returnChart.data.datasets[0].data = returns;
+  returnChart.data.datasets[0].borderColor = c.success;
+  returnChart.data.datasets[0].backgroundColor = c.success + '15';
+  returnChart.options.scales.x.ticks.color = c.muted;
+  returnChart.options.scales.x.title.color = c.muted;
+  returnChart.options.scales.x.grid.color = c.divider;
+  returnChart.options.scales.y.ticks.color = c.muted;
+  returnChart.options.scales.y.title.color = c.muted;
+  returnChart.options.scales.y.grid.color = c.divider;
+  returnChart.options.plugins.legend.labels.color = c.muted;
+  returnChart.update('none');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Scenario Table
+// ═══════════════════════════════════════════════════════════════
+const SCENARIO_PRICES = [100, 120, 140, 160, 170, 180, 190, 200, 210, 220, 240, 260, 280, 300, 350];
+
+function updateTable() {
+  const pp = parseFloat(els.pp.value);
+  const div = parseFloat(els.div.value);
+  const convDate = parseDateLocal(els.convDate.value);
+  const settleDate = parseDateLocal(els.settleDate.value);
+  const currentStock = parseFloat(els.sp.value);
+
+  let html = '';
+  for (const price of SCENARIO_PRICES) {
+    const r = calculate(pp, div, convDate, settleDate, price);
+    const isHighlight = Math.abs(price - currentStock) < 1;
+
+    const gainCls = r.capitalGain >= 0 ? 'positive-text' : 'negative-text';
+    const retCls = r.totalAnnual >= 0 ? 'positive-text' : 'negative-text';
+
+    html += `<tr class="${isHighlight ? 'highlight-row' : ''}">
+      <td>$${price}</td>
+      <td>${r.convRate.toFixed(4)}</td>
+      <td>${fmt.money(r.convValue)}</td>
+      <td class="${gainCls}">${fmt.moneySigned(r.capitalGain)}</td>
+      <td class="${gainCls}">${fmt.pctSigned(r.capitalGainPct)}</td>
+      <td class="${gainCls}">${fmt.pctSigned(r.annCapReturn)}</td>
+      <td>${fmt.money(r.totalDividends)}</td>
+      <td class="${retCls}">${fmt.pctSigned(r.totalReturn)}</td>
+      <td class="${retCls}">${fmt.pctSigned(r.totalAnnual)}</td>
+    </tr>`;
+  }
+  els.tbody.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Main Update
+// ═══════════════════════════════════════════════════════════════
+function update() {
+  const pp = parseFloat(els.pp.value);
+  const div = parseFloat(els.div.value);
+  const convDate = parseDateLocal(els.convDate.value);
+  const settleDate = parseDateLocal(els.settleDate.value);
+  const sp = parseFloat(els.sp.value);
+
+  const r = calculate(pp, div, convDate, settleDate, sp);
+  const zone = getZoneInfo(sp);
+
+  // Input displays
+  els.ppDisplay.textContent = fmt.money(pp);
+  els.divDisplay.textContent = fmt.money(div);
+  els.spDisplay.textContent = fmt.money(sp);
+
+  // Sync number inputs with sliders
+  els.ppNum.value = pp;
+  els.divNum.value = div;
+  els.spNum.value = sp;
+
+  // Zone display
+  els.zone.innerHTML = `<span class="zone-badge ${zone.cls}">${zone.label}</span>
+    <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 6px;">${zone.desc}</div>`;
+
+  // Scenario price label
+  els.scenarioPrice.textContent = sp.toFixed(2);
+
+  // KPIs
+  els.kpiYield.textContent = fmt.pct(r.currentYield);
+  els.kpiYieldSub.textContent = `${fmt.money(div)} / ${fmt.money(pp)}`;
+  els.kpiYears.textContent = r.years.toFixed(2);
+  const convDateStr = convDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  els.kpiYearsSub.textContent = `to ${convDateStr}`;
+  els.kpiDivs.textContent = fmt.money(r.totalDividends);
+  els.kpiDivsSub.textContent = `${fmt.money(div)} × ${r.years.toFixed(2)} yrs`;
+  els.kpiConv.textContent = fmt.money(r.convValue);
+  els.kpiConvSub.textContent = `at ${fmt.money(sp)}/share`;
+  els.kpiReturn.textContent = fmt.pct(r.totalAnnual);
+  els.kpiReturn.classList.toggle('positive', r.totalAnnual >= 0);
+  els.kpiReturn.classList.toggle('negative', r.totalAnnual < 0);
+  els.kpiReturnSub.textContent = 'CAGR incl. dividends';
+
+  // Breakdown
+  els.bdPurchase.textContent = fmt.money(pp);
+  els.bdConvRate.textContent = fmt.shares(r.convRate);
+  els.bdConvValue.textContent = fmt.money(r.convValue);
+  els.bdCapGain.textContent = `${fmt.moneySigned(r.capitalGain)} (${fmt.pctSigned(r.capitalGainPct)})`;
+  els.bdCapGain.className = 'breakdown-value tabular ' + (r.capitalGain >= 0 ? 'positive-text' : 'negative-text');
+  els.bdCapAnnual.textContent = fmt.pctSigned(r.annCapReturn);
+  els.bdCapAnnual.className = 'breakdown-value tabular ' + (r.annCapReturn >= 0 ? 'positive-text' : 'negative-text');
+  els.bdCurrentYield.textContent = fmt.pct(r.currentYield);
+  els.bdSimple.textContent = fmt.pctSigned(r.simpleAnnual);
+  els.bdSimple.className = 'breakdown-value tabular ' + (r.simpleAnnual >= 0 ? 'positive-text' : 'negative-text');
+  els.bdDividends.textContent = fmt.money(r.totalDividends);
+  els.bdTotalReturn.textContent = fmt.pctSigned(r.totalReturn);
+  els.bdTotalReturn.className = 'breakdown-value tabular ' + (r.totalReturn >= 0 ? 'positive-text' : 'negative-text');
+  els.bdCagr.textContent = fmt.pctSigned(r.totalAnnual);
+  els.bdCagr.className = 'breakdown-value tabular ' + (r.totalAnnual >= 0 ? 'positive-text' : 'negative-text');
+
+  // Update table and charts
+  updateTable();
+  updateCharts();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Event Listeners
+// ═══════════════════════════════════════════════════════════════
+function linkInputs(slider, numInput) {
+  slider.addEventListener('input', () => { numInput.value = slider.value; update(); });
+  numInput.addEventListener('input', () => {
+    let v = parseFloat(numInput.value);
+    const min = parseFloat(slider.min);
+    const max = parseFloat(slider.max);
+    if (isNaN(v)) return;
+    v = Math.max(min, Math.min(max, v));
+    slider.value = v;
+    update();
+  });
+}
+
+linkInputs(els.pp, els.ppNum);
+linkInputs(els.div, els.divNum);
+linkInputs(els.sp, els.spNum);
+els.convDate.addEventListener('change', update);
+els.settleDate.addEventListener('change', update);
+
+// Theme toggle
+(function() {
+  const t = document.querySelector('[data-theme-toggle]');
+  const r = document.documentElement;
+  let d = 'dark';
+  t.addEventListener('click', () => {
+    d = d === 'dark' ? 'light' : 'dark';
+    r.setAttribute('data-theme', d);
+    t.innerHTML = d === 'dark'
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+    setTimeout(updateCharts, 50);
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════════════════════════
+initPayoffChart();
+initReturnChart();
+update();
+</script>
+</body>
+</html>
