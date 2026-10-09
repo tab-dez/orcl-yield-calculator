@@ -268,6 +268,63 @@ footer { border-top: 1px solid var(--color-border); background: var(--color-surf
   .logo-sub { display: none; }
   .security-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Responsive sizing: allow chart and table grid items to shrink. */
+.calc-grid {
+  grid-template-columns: 340px minmax(0, 1fr);
+}
+.calc-grid > *,
+.card,
+.chart-container,
+.table-wrap {
+  min-width: 0;
+}
+.card {
+  max-width: 100%;
+}
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: 340px;
+}
+.chart-container canvas {
+  display: block;
+  max-width: 100%;
+}
+.table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+@media (max-width: 900px) {
+  .calc-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  main {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .card {
+    padding: 14px;
+  }
+  .chart-container {
+    height: 280px;
+  }
+  .chart-container canvas {
+    max-height: 280px;
+  }
+}
+@media (max-width: 380px) {
+  .chart-container {
+    height: 250px;
+  }
+  .chart-container canvas {
+    max-height: 250px;
+  }
+}
 </style>
 </head>
 <body>
