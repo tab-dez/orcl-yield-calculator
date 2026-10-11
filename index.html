@@ -275,21 +275,16 @@ footer { border-top: 1px solid var(--color-border); background: var(--color-surf
 .chart-container { position: relative; width: 100%; max-width: 100%; height: 340px; }
 .chart-container canvas { display: block; max-width: 100%; }
 .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; }
-.position-note { font-size: 0.75rem; color: var(--color-text-muted); margin: 8px 0 12px; }
+.position-note { font-size: 0.75rem; line-height: 1.6; color: var(--color-text-muted); margin: 8px 0 12px; }
 label.input-label-text { display: block; margin-bottom: 6px; }
+input[type="text"] { width: 100%; padding: var(--space-2) var(--space-3); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
+.range-row input[type="range"] { min-width: 0; flex: 1; }
+#purchase-price-num { width: 110px !important; }
 .breakdown-label { min-width: 0; padding-right: 8px; }
 @media (max-width: 900px) { .calc-grid { grid-template-columns: minmax(0, 1fr); } }
-@media (max-width: 600px) {
- main { padding-left: 12px; padding-right: 12px; }
- .card { padding: 14px; }
- .chart-container { height: 280px; }
- .chart-container canvas { max-height: 280px; }
- .breakdown-item { flex-wrap: wrap; gap: 4px 8px; }
-}
-@media (max-width: 380px) {
- .chart-container { height: 250px; }
- .chart-container canvas { max-height: 250px; }
-}
+@media (max-width: 600px) { main { padding-left: 12px; padding-right: 12px; } .card { padding: 14px; } .chart-container { height: 280px; } .chart-container canvas { max-height: 280px; } .breakdown-item { flex-wrap: wrap; gap: 4px 8px; } }
+@media (max-width: 380px) { .chart-container { height: 250px; } .chart-container canvas { max-height: 250px; } }
 </style>
 </head>
 <body>
@@ -374,10 +369,11 @@ label.input-label-text { display: block; margin-bottom: 6px; }
             <span class="input-value tabular" id="pp-display">$40.00</span>
           </div>
           <div class="range-row">
-            <input type="range" id="purchase-price" min="0.01" max="60" step="any" value="40">
-            <input type="number" id="purchase-price-num" min="0.000001" step="any" value="40" style="width: 80px;">
+            <input type="range" id="purchase-price" min="0.01" max="60" step="0.01" value="40">
+            <input type="number" id="purchase-price-num" min="0.01" step="0.01" value="40.00" style="width: 110px;">
           </div>
         </div>
+
 
         <div class="input-group">
           <label class="input-label-text" for="position-quantity">Quantity Purchased (depositary shares)</label>
@@ -385,18 +381,19 @@ label.input-label-text { display: block; margin-bottom: 6px; }
         </div>
         <div class="input-group">
           <label class="input-label-text" for="position-cost">Total Purchase Amount ($)</label>
-          <input type="number" id="position-cost" min="0.000001" step="any" value="4000">
+          <input type="text" inputmode="decimal" id="position-cost" value="$4,000.00" autocomplete="off" spellcheck="false">
         </div>
-        <div id="position-status" aria-live="polite" class="position-note">Enter purchase price, then quantity; total amount calculates automatically.</div>
-        <div id="position-error" role="alert" style="color: var(--color-error); font-size: 0.75rem;"></div>
-        <p class="position-note">The two most recently edited purchase fields determine the third. Fractional quantities are supported. Results retain the last valid values while a field is empty or invalid. Calculated amount excludes fees unless included in your entered cost.</p>
-        <div class="input-group" style="margin-top: 20px;">
+        <p class="position-note">Enter any two: price, quantity, or total amount. The calculator fills in the third. To change the result, edit the two values you want to use.</p>
+        <div id="position-status" aria-live="polite" class="position-note">Enter price, then quantity; total amount calculates automatically.</div>
+        <div id="position-error" role="alert" class="position-note" style="color: var(--color-error);"></div>
+        <p class="position-note">Price displays two decimals. When price is calculated from total amount and quantity, extra precision is retained internally to preserve your entered cost. Currency fields format when you leave them; type plain numbers or paste US-formatted currency.</p>
+        <div class="input-group">
           <label class="input-label-text" for="quarterly-dividend-share">Quarterly Dividend per Share ($)</label>
           <input type="number" id="quarterly-dividend-share" min="0" step="any" value="0.8125">
         </div>
         <div class="input-group">
           <label class="input-label-text" for="quarterly-dividend-total">Quarterly Dividend for Entire Position ($)</label>
-          <input type="number" id="quarterly-dividend-total" min="0" step="any" value="81.25">
+          <input type="text" inputmode="decimal" id="quarterly-dividend-total" value="$81.25" autocomplete="off" spellcheck="false">
         </div>
 
         <div class="input-group">
@@ -472,10 +469,11 @@ label.input-label-text { display: block; margin-bottom: 6px; }
           </div>
         </div>
 
+
         <div class="card" style="margin-bottom: var(--space-6);">
           <div class="card-title">Your Position — Projected Scenario Totals</div>
           <div id="position-summary" class="breakdown-grid"></div>
-          <p class="position-note">Charts and the original scenario table remain per share. Position dividends assume four equal quarterly payments. Holding-period dividends use annual dividend × years, not actual payment dates; totals are projections, not payments received.</p>
+          <p class="position-note">Charts and the scenario table remain per share. Quarterly and annual amounts assume four equal payments. Holding-period dividends use annual dividend × years, not an actual payment schedule. These are projections, not payments received. No separate fee or tax calculation is included.</p>
         </div>
 
         <!-- Scenario Breakdown -->
@@ -770,7 +768,7 @@ function buildReturnData(purchasePrice, annualDividend, convDate, settleDate) {
 function initPayoffChart() {
   const c = getChartColors();
   const ctx = document.getElementById('payoffChart').getContext('2d');
-  const pp = parseFloat(els.pp.value);
+  const pp = purchaseState.price;
   const { prices, values } = buildPayoffData(pp);
 
   payoffChart = new Chart(ctx, {
@@ -848,7 +846,7 @@ function initPayoffChart() {
 function initReturnChart() {
   const c = getChartColors();
   const ctx = document.getElementById('returnChart').getContext('2d');
-  const pp = parseFloat(els.pp.value);
+  const pp = purchaseState.price;
   const div = parseFloat(els.div.value);
   const convDate = parseDateLocal(els.convDate.value);
   const settleDate = parseDateLocal(els.settleDate.value);
@@ -908,7 +906,7 @@ function initReturnChart() {
 
 function updateCharts() {
   const c = getChartColors();
-  const pp = parseFloat(els.pp.value);
+  const pp = purchaseState.price;
   const div = parseFloat(els.div.value);
   const convDate = parseDateLocal(els.convDate.value);
   const settleDate = parseDateLocal(els.settleDate.value);
@@ -953,7 +951,7 @@ function updateCharts() {
 const SCENARIO_PRICES = [100, 120, 140, 160, 170, 180, 190, 200, 210, 220, 240, 260, 280, 300, 350];
 
 function updateTable() {
-  const pp = parseFloat(els.pp.value);
+  const pp = purchaseState.price;
   const div = parseFloat(els.div.value);
   const convDate = parseDateLocal(els.convDate.value);
   const settleDate = parseDateLocal(els.settleDate.value);
@@ -986,7 +984,7 @@ function updateTable() {
 // Main Update
 // ═══════════════════════════════════════════════════════════════
 function update() {
-  const pp = parseFloat(els.pp.value);
+  const pp = purchaseState.price;
   const div = parseFloat(els.div.value);
   const convDate = parseDateLocal(els.convDate.value);
   const settleDate = parseDateLocal(els.settleDate.value);
@@ -1002,7 +1000,7 @@ function update() {
   els.spDisplay.textContent = fmt.money(sp);
 
   // Sync number inputs with sliders
-  if (document.activeElement !== els.ppNum) els.ppNum.value = pp;
+  if (document.activeElement !== els.ppNum) els.ppNum.value = pp.toFixed(2);
   els.divNum.value = div;
   els.spNum.value = sp;
 
@@ -1066,7 +1064,7 @@ function linkInputs(slider, numInput) {
   });
 }
 
-// Purchase inputs are linked by the position solver below.
+// Purchase fields are handled by the linked position solver.
 linkInputs(els.div, els.divNum);
 linkInputs(els.sp, els.spNum);
 els.convDate.addEventListener('change', update);
@@ -1091,67 +1089,55 @@ els.settleDate.addEventListener('change', update);
 // Init
 // ═══════════════════════════════════════════════════════════════
 
+const currencyFormat = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2});
+const asCurrency = value => currencyFormat.format(value);
+function parseCurrency(raw) {
+  const value = String(raw).trim().replace(/[$,\s]/g, '');
+  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(value)) return NaN;
+  return Number(value);
+}
+function solvePurchase(values, recent, edited) {
+  const next = recent.filter(key => key !== edited).concat(edited).slice(-2);
+  const derived = ['price', 'qty', 'cost'].find(key => !next.includes(key));
+  const v = {...values};
+  for (const key of next) if (!Number.isFinite(v[key]) || v[key] <= 0) throw new Error('Enter positive purchase values.');
+  if (derived === 'price') v.price = v.cost / v.qty;
+  if (derived === 'qty') v.qty = v.cost / v.price;
+  if (derived === 'cost') v.cost = v.price * v.qty;
+  if (Object.values(v).some(n => !Number.isFinite(n) || n <= 0) || v.price < 0.01) throw new Error('Purchase price must be at least $0.01 and all purchase values must be positive.');
+  return {values: v, recent: next, derived};
+}
+let purchaseState = {price: 40, qty: 100, cost: 4000};
+let purchaseRecent = ['price', 'qty'];
 const costInput = document.getElementById('position-cost');
 const qtyInput = document.getElementById('position-quantity');
 const quarterShare = document.getElementById('quarterly-dividend-share');
 const quarterTotal = document.getElementById('quarterly-dividend-total');
-const positionStatus = document.getElementById('position-status');
 const positionError = document.getElementById('position-error');
-let positionQty = 100;
-let purchaseRecent = ['price', 'qty'];
-
-function solvePurchase(values, recent, edited) {
-  const next = recent.filter(key => key !== edited).concat(edited).slice(-2);
-  const derived = ['price', 'qty', 'cost'].find(key => !next.includes(key));
-  const result = {...values};
-  for (const key of next) {
-    if (!Number.isFinite(result[key]) || result[key] <= 0) throw new Error('Enter positive numbers for the purchase fields.');
-  }
-  if (derived === 'cost') result.cost = result.price * result.qty;
-  if (derived === 'price') result.price = result.cost / result.qty;
-  if (derived === 'qty') result.qty = result.cost / result.price;
-  if (Object.values(result).some(value => !Number.isFinite(value) || value <= 0)) throw new Error('Purchase values are outside the supported range.');
-  if (result.price < 0.000001) throw new Error('Purchase price must be at least $0.000001.');
-  return {values: result, recent: next, derived};
-}
-function setPriceRange(price) {
-  if (price < Number(els.pp.min)) els.pp.min = String(price);
-  if (price > Number(els.pp.max)) els.pp.max = String(price);
-}
+const positionStatus = document.getElementById('position-status');
+function syncInactive(input, value) { if (document.activeElement !== input) input.value = value; }
 function editPurchase(key, input) {
-  if (input.value.trim() === '') {
-    positionError.textContent = 'Enter a positive value. Results retain the last valid position.';
-    return;
-  }
-  const values = {price: Number(els.pp.value), qty: positionQty, cost: Number(els.pp.value) * positionQty};
-  values[key] = Number(input.value);
+  const n = key === 'cost' ? parseCurrency(input.value) : (input.value.trim() ? Number(input.value) : NaN);
+  const values = {...purchaseState};
+  values[key] = key === 'price' ? Math.round((n + Number.EPSILON) * 100) / 100 : n;
   try {
     const solved = solvePurchase(values, purchaseRecent, key);
+    purchaseState = solved.values;
     purchaseRecent = solved.recent;
-    positionQty = solved.values.qty;
-    setPriceRange(solved.values.price);
-    els.pp.value = String(solved.values.price);
-    const names = {price: 'Purchase price', qty: 'Quantity', cost: 'Total purchase amount'};
-    positionStatus.textContent = `${names[solved.derived]} calculated from ${names[solved.recent[0]].toLowerCase()} and ${names[solved.recent[1]].toLowerCase()}.`;
+    if (purchaseState.price > Number(els.pp.max)) els.pp.max = String(Math.ceil(purchaseState.price));
+    els.pp.value = purchaseState.price.toFixed(2);
+    const labels = {price: 'Purchase price', qty: 'Quantity', cost: 'Total purchase amount'};
+    positionStatus.textContent = `${labels[solved.derived]} calculated from ${labels[solved.recent[0]].toLowerCase()} and ${labels[solved.recent[1]].toLowerCase()}.`;
     positionError.textContent = '';
     update();
-  } catch (error) {
-    positionError.textContent = error.message + ' Results retain the last valid position.';
-  }
-}
-function syncField(input, value) {
-  if (document.activeElement !== input) input.value = String(Number(value.toPrecision(12)));
+  } catch (error) { positionError.textContent = error.message + ' Results retain the last valid values.'; }
 }
 function editQuarter(input, total) {
-  const amount = Number(input.value);
-  if (input.value.trim() === '' || !Number.isFinite(amount) || amount < 0) {
-    positionError.textContent = 'Enter a nonnegative quarterly dividend. Results retain the last valid dividend.';
-    return;
-  }
-  const annual = (total ? amount / positionQty : amount) * 4;
+  const amount = total ? parseCurrency(input.value) : (input.value.trim() ? Number(input.value) : NaN);
+  if (!Number.isFinite(amount) || amount < 0) { positionError.textContent = 'Enter a nonnegative dividend. Results retain the last valid dividend.'; return; }
+  const annual = (total ? amount / purchaseState.qty : amount) * 4;
   if (!Number.isFinite(annual)) { positionError.textContent = 'Dividend is outside the supported range.'; return; }
-  els.div.step = 'any';
-  els.divNum.step = 'any';
+  els.div.step = 'any'; els.divNum.step = 'any';
   if (annual > Number(els.div.max)) els.div.max = String(annual);
   els.divNum.max = els.div.max;
   els.div.value = String(annual);
@@ -1159,34 +1145,41 @@ function editQuarter(input, total) {
   update();
 }
 function renderPosition(r) {
-  syncField(costInput, r.purchasePrice * positionQty);
-  syncField(qtyInput, positionQty);
-  syncField(quarterShare, r.annualDividend / 4);
-  syncField(quarterTotal, r.annualDividend / 4 * positionQty);
-  const signed = value => (value < 0 ? '−$' : '+$') + Math.abs(value).toFixed(2);
+  const q = purchaseState.qty;
+  syncInactive(costInput, asCurrency(purchaseState.cost));
+  syncInactive(qtyInput, String(Number(q.toPrecision(12))));
+  syncInactive(quarterShare, String(Number((r.annualDividend / 4).toPrecision(12))));
+  syncInactive(quarterTotal, asCurrency(r.annualDividend / 4 * q));
   const rows = [
-    ['Quantity Purchased', positionQty.toLocaleString(undefined, {maximumFractionDigits: 6})],
-    ['Total Purchase Amount', fmt.money(r.purchasePrice * positionQty)],
+    ['Quantity Purchased', q.toLocaleString('en-US', {maximumFractionDigits: 6})],
+    ['Total Purchase Amount', asCurrency(purchaseState.cost)],
     ['Quarterly Dividend / Share', '$' + (r.annualDividend / 4).toFixed(4)],
-    ['Quarterly Position Dividend', fmt.money(r.annualDividend / 4 * positionQty)],
-    ['Annual Position Dividend', fmt.money(r.annualDividend * positionQty)],
-    ['Projected Common Shares at Conversion', (r.convRate * positionQty).toFixed(4)],
-    ['Projected Conversion Value', fmt.money(r.convValue * positionQty)],
-    ['Position Capital Gain / (Loss)', signed(r.capitalGain * positionQty)],
-    ['Projected Holding-Period Dividends', fmt.money(r.totalDividends * positionQty)],
-    ['Projected Total Profit / (Loss)', signed((r.convValue + r.totalDividends - r.purchasePrice) * positionQty)]
+    ['Quarterly Position Dividend', asCurrency(r.annualDividend / 4 * q)],
+    ['Annual Position Dividend', asCurrency(r.annualDividend * q)],
+    ['Projected Common Shares at Conversion', (r.convRate * q).toLocaleString('en-US', {maximumFractionDigits: 4})],
+    ['Projected Conversion Value', asCurrency(r.convValue * q)],
+    ['Position Capital Gain / (Loss)', asCurrency((r.convValue - r.purchasePrice) * q)],
+    ['Projected Holding-Period Dividends', asCurrency(r.totalDividends * q)],
+    ['Projected Total Profit / (Loss)', asCurrency((r.convValue + r.totalDividends - r.purchasePrice) * q)]
   ];
   const row = ([label, value]) => `<div class="breakdown-item"><span class="breakdown-label">${label}</span><span class="breakdown-value tabular">${value}</span></div>`;
   document.getElementById('position-summary').innerHTML = `<div>${rows.slice(0, 5).map(row).join('')}</div><div>${rows.slice(5).map(row).join('')}</div>`;
 }
 els.pp.addEventListener('input', () => editPurchase('price', els.pp));
 els.ppNum.addEventListener('input', () => editPurchase('price', els.ppNum));
+els.ppNum.addEventListener('blur', () => { els.ppNum.value = purchaseState.price.toFixed(2); });
 qtyInput.addEventListener('input', () => editPurchase('qty', qtyInput));
+qtyInput.addEventListener('blur', () => { qtyInput.value = String(Number(purchaseState.qty.toPrecision(12))); });
 costInput.addEventListener('input', () => editPurchase('cost', costInput));
-for (const input of [els.ppNum, qtyInput, costInput]) input.addEventListener('blur', () => update());
 quarterShare.addEventListener('input', () => editQuarter(quarterShare, false));
 quarterTotal.addEventListener('input', () => editQuarter(quarterTotal, true));
-for (const input of [quarterShare, quarterTotal]) input.addEventListener('blur', () => update());
+function currencyEditing(input, getValue) {
+  input.addEventListener('focus', () => { input.value = getValue().toFixed(2); });
+  input.addEventListener('blur', () => { input.value = asCurrency(getValue()); });
+}
+currencyEditing(costInput, () => purchaseState.cost);
+currencyEditing(quarterTotal, () => Number(els.div.value) / 4 * purchaseState.qty);
+quarterShare.addEventListener('blur', () => { quarterShare.value = String(Number((Number(els.div.value) / 4).toPrecision(12))); });
 
 initPayoffChart();
 initReturnChart();
