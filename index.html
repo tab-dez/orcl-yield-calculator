@@ -280,7 +280,19 @@ label.input-label-text { display: block; margin-bottom: 6px; }
 input[type="text"] { width: 100%; padding: var(--space-2) var(--space-3); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
 .range-row input[type="range"] { min-width: 0; flex: 1; }
-#purchase-price-num { width: 110px !important; }
+/* Equal-sized numeric controls leave room for decimals and spinner arrows. */
+#purchase-price-num,
+#annual-dividend-num,
+#stock-price-num {
+  width: 128px !important;
+  min-width: 128px;
+  flex: 0 0 128px;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.range-row { min-width: 0; }
+.range-row input[type="range"] { width: 0; min-width: 0; flex: 1 1 0; }
 .breakdown-label { min-width: 0; padding-right: 8px; }
 @media (max-width: 900px) { .calc-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 600px) { main { padding-left: 12px; padding-right: 12px; } .card { padding: 14px; } .chart-container { height: 280px; } .chart-container canvas { max-height: 280px; } .breakdown-item { flex-wrap: wrap; gap: 4px 8px; } }
@@ -370,7 +382,7 @@ input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
           </div>
           <div class="range-row">
             <input type="range" id="purchase-price" min="0.01" max="60" step="0.01" value="40">
-            <input type="number" id="purchase-price-num" min="0.01" step="0.01" value="40.00" style="width: 110px;">
+            <input type="number" id="purchase-price-num" min="0.01" step="0.01" value="40.00" style="width: 128px;">
           </div>
         </div>
 
@@ -403,7 +415,7 @@ input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
           </div>
           <div class="range-row">
             <input type="range" id="annual-dividend" min="0" max="5" step="0.05" value="3.25">
-            <input type="number" id="annual-dividend-num" min="0" step="0.01" value="3.25" style="width: 80px;">
+            <input type="number" id="annual-dividend-num" min="0" step="0.01" value="3.25" style="width: 128px;">
           </div>
         </div>
 
@@ -428,7 +440,7 @@ input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
           </div>
           <div class="range-row">
             <input type="range" id="stock-price" min="80" max="350" step="1" value="180">
-            <input type="number" id="stock-price-num" min="0" max="500" step="0.01" value="180" style="width: 80px;">
+            <input type="number" id="stock-price-num" min="0" max="500" step="0.01" value="180" style="width: 128px;">
           </div>
         </div>
 
@@ -1052,11 +1064,10 @@ function update() {
 // Event Listeners
 // ═══════════════════════════════════════════════════════════════
 function linkInputs(slider, numInput) {
-  // Preserve exact numeric values; numeric spinner retains a concrete step.
   slider.step = 'any';
   function fromNumber() {
     if (numInput.value.trim() === '') return;
-    let value = Number(numInput.value);
+    const value = Number(numInput.value);
     if (!Number.isFinite(value)) return;
     const min = numInput.min === '' ? -Infinity : Number(numInput.min);
     const max = numInput.max === '' ? Infinity : Number(numInput.max);
@@ -1074,9 +1085,7 @@ function linkInputs(slider, numInput) {
   slider.addEventListener('change', fromSlider);
   numInput.addEventListener('input', fromNumber);
   numInput.addEventListener('change', fromNumber);
-  numInput.addEventListener('blur', () => {
-    numInput.value = Number(slider.value).toFixed(2);
-  });
+  numInput.addEventListener('blur', () => { numInput.value = Number(slider.value).toFixed(2); });
 }
 
 // Purchase fields are handled by the linked position solver.
