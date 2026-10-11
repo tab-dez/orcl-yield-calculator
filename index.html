@@ -403,7 +403,7 @@ input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
           </div>
           <div class="range-row">
             <input type="range" id="annual-dividend" min="0" max="5" step="0.05" value="3.25">
-            <input type="number" id="annual-dividend-num" min="0" max="5" step="0.05" value="3.25" style="width: 80px;">
+            <input type="number" id="annual-dividend-num" min="0" step="0.01" value="3.25" style="width: 80px;">
           </div>
         </div>
 
@@ -428,7 +428,7 @@ input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
           </div>
           <div class="range-row">
             <input type="range" id="stock-price" min="80" max="350" step="1" value="180">
-            <input type="number" id="stock-price-num" min="0" max="500" step="1" value="180" style="width: 80px;">
+            <input type="number" id="stock-price-num" min="0" max="500" step="0.01" value="180" style="width: 80px;">
           </div>
         </div>
 
@@ -1001,8 +1001,8 @@ function update() {
 
   // Sync number inputs with sliders
   if (document.activeElement !== els.ppNum) els.ppNum.value = pp.toFixed(2);
-  els.divNum.value = div;
-  els.spNum.value = sp;
+  if (document.activeElement !== els.divNum) els.divNum.value = div.toFixed(2);
+  if (document.activeElement !== els.spNum) els.spNum.value = sp.toFixed(2);
 
   // Zone display
   els.zone.innerHTML = `<span class="zone-badge ${zone.cls}">${zone.label}</span>
@@ -1052,15 +1052,30 @@ function update() {
 // Event Listeners
 // ═══════════════════════════════════════════════════════════════
 function linkInputs(slider, numInput) {
-  slider.addEventListener('input', () => { numInput.value = slider.value; update(); });
-  numInput.addEventListener('input', () => {
-    let v = parseFloat(numInput.value);
-    const min = parseFloat(slider.min);
-    const max = parseFloat(slider.max);
-    if (isNaN(v)) return;
-    v = Math.max(min, Math.min(max, v));
-    slider.value = v;
+  // Preserve exact numeric values; numeric spinner retains a concrete step.
+  slider.step = 'any';
+  function fromNumber() {
+    if (numInput.value.trim() === '') return;
+    let value = Number(numInput.value);
+    if (!Number.isFinite(value)) return;
+    const min = numInput.min === '' ? -Infinity : Number(numInput.min);
+    const max = numInput.max === '' ? Infinity : Number(numInput.max);
+    if (value < min || value > max) return;
+    if (value < Number(slider.min)) slider.min = String(value);
+    if (value > Number(slider.max)) slider.max = String(value);
+    slider.value = String(value);
     update();
+  }
+  function fromSlider() {
+    numInput.value = Number(slider.value).toFixed(2);
+    update();
+  }
+  slider.addEventListener('input', fromSlider);
+  slider.addEventListener('change', fromSlider);
+  numInput.addEventListener('input', fromNumber);
+  numInput.addEventListener('change', fromNumber);
+  numInput.addEventListener('blur', () => {
+    numInput.value = Number(slider.value).toFixed(2);
   });
 }
 
@@ -1137,9 +1152,9 @@ function editQuarter(input, total) {
   if (!Number.isFinite(amount) || amount < 0) { positionError.textContent = 'Enter a nonnegative dividend. Results retain the last valid dividend.'; return; }
   const annual = (total ? amount / purchaseState.qty : amount) * 4;
   if (!Number.isFinite(annual)) { positionError.textContent = 'Dividend is outside the supported range.'; return; }
-  els.div.step = 'any'; els.divNum.step = 'any';
+  els.div.step = 'any'; els.divNum.step = '0.01';
   if (annual > Number(els.div.max)) els.div.max = String(annual);
-  els.divNum.max = els.div.max;
+  els.divNum.removeAttribute('max');
   els.div.value = String(annual);
   positionError.textContent = '';
   update();
@@ -1166,7 +1181,9 @@ function renderPosition(r) {
   document.getElementById('position-summary').innerHTML = `<div>${rows.slice(0, 5).map(row).join('')}</div><div>${rows.slice(5).map(row).join('')}</div>`;
 }
 els.pp.addEventListener('input', () => editPurchase('price', els.pp));
+els.pp.addEventListener('change', () => editPurchase('price', els.pp));
 els.ppNum.addEventListener('input', () => editPurchase('price', els.ppNum));
+els.ppNum.addEventListener('change', () => editPurchase('price', els.ppNum));
 els.ppNum.addEventListener('blur', () => { els.ppNum.value = purchaseState.price.toFixed(2); });
 qtyInput.addEventListener('input', () => editPurchase('qty', qtyInput));
 qtyInput.addEventListener('blur', () => { qtyInput.value = String(Number(purchaseState.qty.toPrecision(12))); });
