@@ -291,34 +291,56 @@ input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
 @media (max-width: 600px) { main { padding-left: 12px; padding-right: 12px; } .card { padding: 14px; } .chart-container { height: 280px; } .chart-container canvas { max-height: 280px; } .breakdown-item { flex-wrap: wrap; gap: 4px 8px; } }
 @media (max-width: 380px) { .chart-container { height: 250px; } .chart-container canvas { max-height: 250px; } }
 
-/* A distinct input workspace; scoped colors leave results unchanged. */
 .inputs-panel {
-  background: #15263A;
-  border: 1px solid #487AA5;
-  border-top: 4px solid #69AEF2;
-  --color-surface-2: #0F1D2E;
-  --color-surface-dynamic: #344B65;
-  --color-border: #3C5875;
-  --color-text-muted: #B7C9DD;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+ background: #15263A; border: 1px solid #487AA5; border-top: 4px solid #69AEF2;
+ --color-surface-2: #0F1D2E; --color-surface-dynamic: #344B65;
+ --color-border: #3C5875; --color-text-muted: #B7C9DD;
+ box-shadow: 0 4px 18px rgba(0,0,0,0.2);
 }
 .inputs-panel > .card-title { color: #A7D3FF; }
-.inputs-panel input:focus-visible {
-  outline: 2px solid #69AEF2;
-  outline-offset: 2px;
-}
+.inputs-panel input:focus-visible { outline: 2px solid #69AEF2; outline-offset: 2px; }
 [data-theme='light'] .inputs-panel {
-  background: #EDF5FF;
-  border-color: #80B4E5;
-  border-top-color: #2978C5;
-  --color-surface-2: #FFFFFF;
-  --color-surface-dynamic: #CFDFEF;
-  --color-border: #A8C7E6;
-  --color-text-muted: #475D75;
-  box-shadow: 0 4px 18px rgba(30, 80, 130, 0.08);
+ background: #EDF5FF; border-color: #80B4E5; border-top-color: #2978C5;
+ --color-surface-2: #FFFFFF; --color-surface-dynamic: #CFDFEF;
+ --color-border: #A8C7E6; --color-text-muted: #475D75;
+ box-shadow: 0 4px 18px rgba(30,80,130,0.08);
 }
 [data-theme='light'] .inputs-panel > .card-title { color: #245C91; }
 [data-theme='light'] .inputs-panel input:focus-visible { outline-color: #2978C5; }
+
+/* Keep native date controls within the input card, including mobile WebKit. */
+.inputs-panel .input-group {
+  width: 100%; max-width: 100%; min-width: 0; min-inline-size: 0;
+}
+.inputs-panel .input-label { min-width: 0; flex-wrap: wrap; gap: 4px; }
+.inputs-panel .input-label-text { overflow-wrap: anywhere; }
+#conversion-date, #settlement-date {
+  display: block;
+  box-sizing: border-box;
+  width: 100%; max-width: 100%; min-width: 0;
+  inline-size: 100%; max-inline-size: 100%; min-inline-size: 0;
+  margin: 0;
+  min-height: 44px;
+  line-height: 1.25;
+  -webkit-appearance: none;
+  appearance: none;
+}
+#conversion-date::-webkit-date-and-time-value,
+#settlement-date::-webkit-date-and-time-value {
+  min-width: 0;
+  text-align: left;
+}
+#conversion-date::-webkit-datetime-edit,
+#settlement-date::-webkit-datetime-edit {
+  min-width: 0;
+  padding: 0;
+}
+@media (max-width: 600px) {
+  #conversion-date, #settlement-date {
+    font-size: 16px;
+    padding: 10px 8px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1096,8 +1118,7 @@ function linkInputs(slider, numInput) {
     if (value < min || value > max) return;
     if (value < Number(slider.min)) slider.min = String(value);
     if (value > Number(slider.max)) slider.max = String(value);
-    slider.value = String(value);
-    update();
+    slider.value = String(value); update();
   }
   function fromSlider() { numInput.value = Number(slider.value).toFixed(2); update(); }
   slider.addEventListener('input', fromSlider);
