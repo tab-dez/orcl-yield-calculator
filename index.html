@@ -280,16 +280,9 @@ label.input-label-text { display: block; margin-bottom: 6px; }
 input[type="text"] { width: 100%; padding: var(--space-2) var(--space-3); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
 .range-row input[type="range"] { min-width: 0; flex: 1; }
-/* Equal-sized numeric controls leave room for decimals and spinner arrows. */
-#purchase-price-num,
-#annual-dividend-num,
-#stock-price-num {
-  width: 128px !important;
-  min-width: 128px;
-  flex: 0 0 128px;
-  padding-left: 8px;
-  padding-right: 8px;
-  font-variant-numeric: tabular-nums;
+#purchase-price-num, #annual-dividend-num, #stock-price-num {
+ width: 128px !important; min-width: 128px; flex: 0 0 128px;
+ padding-left: 8px; padding-right: 8px; font-variant-numeric: tabular-nums;
 }
 .range-row { min-width: 0; }
 .range-row input[type="range"] { width: 0; min-width: 0; flex: 1 1 0; }
@@ -297,6 +290,35 @@ input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
 @media (max-width: 900px) { .calc-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 600px) { main { padding-left: 12px; padding-right: 12px; } .card { padding: 14px; } .chart-container { height: 280px; } .chart-container canvas { max-height: 280px; } .breakdown-item { flex-wrap: wrap; gap: 4px 8px; } }
 @media (max-width: 380px) { .chart-container { height: 250px; } .chart-container canvas { max-height: 250px; } }
+
+/* A distinct input workspace; scoped colors leave results unchanged. */
+.inputs-panel {
+  background: #15263A;
+  border: 1px solid #487AA5;
+  border-top: 4px solid #69AEF2;
+  --color-surface-2: #0F1D2E;
+  --color-surface-dynamic: #344B65;
+  --color-border: #3C5875;
+  --color-text-muted: #B7C9DD;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+.inputs-panel > .card-title { color: #A7D3FF; }
+.inputs-panel input:focus-visible {
+  outline: 2px solid #69AEF2;
+  outline-offset: 2px;
+}
+[data-theme='light'] .inputs-panel {
+  background: #EDF5FF;
+  border-color: #80B4E5;
+  border-top-color: #2978C5;
+  --color-surface-2: #FFFFFF;
+  --color-surface-dynamic: #CFDFEF;
+  --color-border: #A8C7E6;
+  --color-text-muted: #475D75;
+  box-shadow: 0 4px 18px rgba(30, 80, 130, 0.08);
+}
+[data-theme='light'] .inputs-panel > .card-title { color: #245C91; }
+[data-theme='light'] .inputs-panel input:focus-visible { outline-color: #2978C5; }
 </style>
 </head>
 <body>
@@ -372,7 +394,7 @@ input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
   <section>
     <div class="calc-grid">
       <!-- Inputs -->
-      <div class="card">
+      <div class="card inputs-panel">
         <div class="card-title">Inputs</div>
 
         <div class="input-group">
@@ -1077,10 +1099,7 @@ function linkInputs(slider, numInput) {
     slider.value = String(value);
     update();
   }
-  function fromSlider() {
-    numInput.value = Number(slider.value).toFixed(2);
-    update();
-  }
+  function fromSlider() { numInput.value = Number(slider.value).toFixed(2); update(); }
   slider.addEventListener('input', fromSlider);
   slider.addEventListener('change', fromSlider);
   numInput.addEventListener('input', fromNumber);
