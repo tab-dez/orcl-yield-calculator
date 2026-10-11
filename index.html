@@ -269,29 +269,26 @@ footer { border-top: 1px solid var(--color-border); background: var(--color-surf
   .security-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* Mobile layout and position inputs. */
 .calc-grid { grid-template-columns: 340px minmax(0, 1fr); }
 .calc-grid > *, .card, .chart-container, .table-wrap { min-width: 0; }
 .card { max-width: 100%; }
 .chart-container { position: relative; width: 100%; max-width: 100%; height: 340px; }
 .chart-container canvas { display: block; max-width: 100%; }
 .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; }
-.position-input-box { padding: 12px; margin-bottom: 20px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
-.position-input-box label { display: block; margin-bottom: 6px; }
-.position-note { font-size: 0.75rem; color: var(--color-text-muted); line-height: 1.6; margin-top: 12px; }
+.position-note { font-size: 0.75rem; color: var(--color-text-muted); margin: 8px 0 12px; }
+label.input-label-text { display: block; margin-bottom: 6px; }
 .breakdown-label { min-width: 0; padding-right: 8px; }
-.breakdown-value { flex-shrink: 0; }
 @media (max-width: 900px) { .calc-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 600px) {
-  main { padding-left: 12px; padding-right: 12px; }
-  .card { padding: 14px; }
-  .chart-container { height: 280px; }
-  .chart-container canvas { max-height: 280px; }
-  .breakdown-item { flex-wrap: wrap; gap: 4px 8px; }
+ main { padding-left: 12px; padding-right: 12px; }
+ .card { padding: 14px; }
+ .chart-container { height: 280px; }
+ .chart-container canvas { max-height: 280px; }
+ .breakdown-item { flex-wrap: wrap; gap: 4px 8px; }
 }
 @media (max-width: 380px) {
-  .chart-container { height: 250px; }
-  .chart-container canvas { max-height: 250px; }
+ .chart-container { height: 250px; }
+ .chart-container canvas { max-height: 250px; }
 }
 </style>
 </head>
@@ -371,38 +368,35 @@ footer { border-top: 1px solid var(--color-border); background: var(--color-surf
       <div class="card">
         <div class="card-title">Inputs</div>
 
-        <div class="position-input-box">
-          <div class="card-title">Your Purchased Position</div>
-          <div class="input-group">
-            <label class="input-label-text" for="position-cost">Total Purchase Amount ($)</label>
-            <input type="number" id="position-cost" min="0.01" step="0.01" value="4000">
-          </div>
-          <div class="input-group">
-            <label class="input-label-text" for="position-quantity">Quantity Purchased (depositary shares)</label>
-            <input type="number" id="position-quantity" min="0.000001" step="any" value="100">
-          </div>
-          <div class="input-group">
-            <label class="input-label-text" for="quarterly-dividend-share">Quarterly Dividend per Share ($)</label>
-            <input type="number" id="quarterly-dividend-share" min="0" step="any" value="0.8125">
-          </div>
-          <div class="input-group">
-            <label class="input-label-text" for="quarterly-dividend-total">Quarterly Dividend for Entire Position ($)</label>
-            <input type="number" id="quarterly-dividend-total" min="0" step="any" value="81.25">
-          </div>
-          <div id="position-error" role="alert" style="color: var(--color-error); font-size: 0.75rem;"></div>
-          <p class="position-note">Average purchase price = total amount ÷ quantity. Editing amount or quantity recalculates the per-share price; editing the per-share price recalculates total amount. Quarterly dividend fields are linked. Include fees in total amount if you want a fee-inclusive cost basis.</p>
-        </div>
-
-
         <div class="input-group">
           <div class="input-label">
-            <span class="input-label-text">Average Purchase Price / Share</span>
+            <span class="input-label-text">Purchase Price per Share</span>
             <span class="input-value tabular" id="pp-display">$40.00</span>
           </div>
           <div class="range-row">
-            <input type="range" id="purchase-price" min="30" max="60" step="0.000001" value="40">
-            <input type="number" id="purchase-price-num" min="0.000001" max="60" step="any" value="40" style="width: 80px;">
+            <input type="range" id="purchase-price" min="0.01" max="60" step="any" value="40">
+            <input type="number" id="purchase-price-num" min="0.000001" step="any" value="40" style="width: 80px;">
           </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label-text" for="position-quantity">Quantity Purchased (depositary shares)</label>
+          <input type="number" id="position-quantity" min="0.000001" step="any" value="100">
+        </div>
+        <div class="input-group">
+          <label class="input-label-text" for="position-cost">Total Purchase Amount ($)</label>
+          <input type="number" id="position-cost" min="0.000001" step="any" value="4000">
+        </div>
+        <div id="position-status" aria-live="polite" class="position-note">Enter purchase price, then quantity; total amount calculates automatically.</div>
+        <div id="position-error" role="alert" style="color: var(--color-error); font-size: 0.75rem;"></div>
+        <p class="position-note">The two most recently edited purchase fields determine the third. Fractional quantities are supported. Results retain the last valid values while a field is empty or invalid. Calculated amount excludes fees unless included in your entered cost.</p>
+        <div class="input-group" style="margin-top: 20px;">
+          <label class="input-label-text" for="quarterly-dividend-share">Quarterly Dividend per Share ($)</label>
+          <input type="number" id="quarterly-dividend-share" min="0" step="any" value="0.8125">
+        </div>
+        <div class="input-group">
+          <label class="input-label-text" for="quarterly-dividend-total">Quarterly Dividend for Entire Position ($)</label>
+          <input type="number" id="quarterly-dividend-total" min="0" step="any" value="81.25">
         </div>
 
         <div class="input-group">
@@ -478,26 +472,10 @@ footer { border-top: 1px solid var(--color-border); background: var(--color-surf
           </div>
         </div>
 
-
         <div class="card" style="margin-bottom: var(--space-6);">
           <div class="card-title">Your Position — Projected Scenario Totals</div>
-          <div class="breakdown-grid">
-            <div>
-              <div class="breakdown-item"><span class="breakdown-label">Quantity Purchased</span><span class="breakdown-value tabular" id="pos-qty-display"></span></div>
-              <div class="breakdown-item"><span class="breakdown-label">Total Purchase Amount</span><span class="breakdown-value tabular" id="pos-cost-display"></span></div>
-              <div class="breakdown-item"><span class="breakdown-label">Quarterly Dividend / Share</span><span class="breakdown-value tabular" id="pos-quarter-share"></span></div>
-              <div class="breakdown-item"><span class="breakdown-label">Quarterly Position Dividend</span><span class="breakdown-value tabular" id="pos-quarter-total"></span></div>
-              <div class="breakdown-item"><span class="breakdown-label">Annual Position Dividend</span><span class="breakdown-value tabular" id="pos-annual-total"></span></div>
-            </div>
-            <div>
-              <div class="breakdown-item"><span class="breakdown-label">Projected Common Shares at Conversion</span><span class="breakdown-value tabular" id="pos-conv-shares"></span></div>
-              <div class="breakdown-item"><span class="breakdown-label">Projected Conversion Value</span><span class="breakdown-value tabular" id="pos-conv-value"></span></div>
-              <div class="breakdown-item"><span class="breakdown-label">Position Capital Gain / (Loss)</span><span class="breakdown-value tabular" id="pos-cap-gain"></span></div>
-              <div class="breakdown-item"><span class="breakdown-label">Projected Holding-Period Dividends</span><span class="breakdown-value tabular" id="pos-dividends"></span></div>
-              <div class="breakdown-item"><span class="breakdown-label">Projected Total Profit / (Loss)</span><span class="breakdown-value tabular" id="pos-profit"></span></div>
-            </div>
-          </div>
-          <p class="position-note">These are projected totals, not a record of dividends received. Annual dividends assume four equal quarterly payments. Holding-period dividends remain annual dividend × years, without an ex-dividend/payment-date schedule. Existing charts, scenario table and breakdown below remain per depositary share; percentage returns apply equally to the position.</p>
+          <div id="position-summary" class="breakdown-grid"></div>
+          <p class="position-note">Charts and the original scenario table remain per share. Position dividends assume four equal quarterly payments. Holding-period dividends use annual dividend × years, not actual payment dates; totals are projections, not payments received.</p>
         </div>
 
         <!-- Scenario Breakdown -->
@@ -1024,7 +1002,7 @@ function update() {
   els.spDisplay.textContent = fmt.money(sp);
 
   // Sync number inputs with sliders
-  els.ppNum.value = pp;
+  if (document.activeElement !== els.ppNum) els.ppNum.value = pp;
   els.divNum.value = div;
   els.spNum.value = sp;
 
@@ -1088,7 +1066,7 @@ function linkInputs(slider, numInput) {
   });
 }
 
-linkInputs(els.pp, els.ppNum);
+// Purchase inputs are linked by the position solver below.
 linkInputs(els.div, els.divNum);
 linkInputs(els.sp, els.spNum);
 els.convDate.addEventListener('change', update);
@@ -1113,83 +1091,102 @@ els.settleDate.addEventListener('change', update);
 // Init
 // ═══════════════════════════════════════════════════════════════
 
-// Position inputs: quantity is in preferred depositary shares.
-const positionCost = document.getElementById('position-cost');
-const positionQuantity = document.getElementById('position-quantity');
+const costInput = document.getElementById('position-cost');
+const qtyInput = document.getElementById('position-quantity');
 const quarterShare = document.getElementById('quarterly-dividend-share');
 const quarterTotal = document.getElementById('quarterly-dividend-total');
+const positionStatus = document.getElementById('position-status');
 const positionError = document.getElementById('position-error');
 let positionQty = 100;
+let purchaseRecent = ['price', 'qty'];
 
-function expandPriceRange(price) {
+function solvePurchase(values, recent, edited) {
+  const next = recent.filter(key => key !== edited).concat(edited).slice(-2);
+  const derived = ['price', 'qty', 'cost'].find(key => !next.includes(key));
+  const result = {...values};
+  for (const key of next) {
+    if (!Number.isFinite(result[key]) || result[key] <= 0) throw new Error('Enter positive numbers for the purchase fields.');
+  }
+  if (derived === 'cost') result.cost = result.price * result.qty;
+  if (derived === 'price') result.price = result.cost / result.qty;
+  if (derived === 'qty') result.qty = result.cost / result.price;
+  if (Object.values(result).some(value => !Number.isFinite(value) || value <= 0)) throw new Error('Purchase values are outside the supported range.');
+  if (result.price < 0.000001) throw new Error('Purchase price must be at least $0.000001.');
+  return {values: result, recent: next, derived};
+}
+function setPriceRange(price) {
   if (price < Number(els.pp.min)) els.pp.min = String(price);
   if (price > Number(els.pp.max)) els.pp.max = String(price);
-  els.ppNum.max = els.pp.max;
 }
-function setAnnualDividend(value) {
-  if (value > Number(els.div.max)) els.div.max = String(value);
-  els.divNum.max = els.div.max;
-  els.div.step = 'any';
-  els.divNum.step = 'any';
-  els.div.value = String(value);
-  update();
-}
-function readPosition() {
-  const cost = Number(positionCost.value);
-  const quantity = Number(positionQuantity.value);
-  if (!Number.isFinite(cost) || cost <= 0 || !Number.isFinite(quantity) || quantity <= 0) {
-    positionError.textContent = 'Enter a positive total purchase amount and quantity. Results retain the last valid position.';
+function editPurchase(key, input) {
+  if (input.value.trim() === '') {
+    positionError.textContent = 'Enter a positive value. Results retain the last valid position.';
     return;
   }
-  const price = cost / quantity;
-  if (!Number.isFinite(price) || price < 0.000001) {
-    positionError.textContent = 'Average price must be at least $0.000001. Results retain the last valid position.';
-    return;
+  const values = {price: Number(els.pp.value), qty: positionQty, cost: Number(els.pp.value) * positionQty};
+  values[key] = Number(input.value);
+  try {
+    const solved = solvePurchase(values, purchaseRecent, key);
+    purchaseRecent = solved.recent;
+    positionQty = solved.values.qty;
+    setPriceRange(solved.values.price);
+    els.pp.value = String(solved.values.price);
+    const names = {price: 'Purchase price', qty: 'Quantity', cost: 'Total purchase amount'};
+    positionStatus.textContent = `${names[solved.derived]} calculated from ${names[solved.recent[0]].toLowerCase()} and ${names[solved.recent[1]].toLowerCase()}.`;
+    positionError.textContent = '';
+    update();
+  } catch (error) {
+    positionError.textContent = error.message + ' Results retain the last valid position.';
   }
-  positionError.textContent = '';
-  positionQty = quantity;
-  expandPriceRange(price);
-  els.pp.value = String(price);
-  update();
 }
-function readQuarterly(input, isTotal) {
+function syncField(input, value) {
+  if (document.activeElement !== input) input.value = String(Number(value.toPrecision(12)));
+}
+function editQuarter(input, total) {
   const amount = Number(input.value);
   if (input.value.trim() === '' || !Number.isFinite(amount) || amount < 0) {
-    positionError.textContent = 'Quarterly dividend must be zero or a positive number. Results retain the last valid dividend.';
+    positionError.textContent = 'Enter a nonnegative quarterly dividend. Results retain the last valid dividend.';
     return;
   }
+  const annual = (total ? amount / positionQty : amount) * 4;
+  if (!Number.isFinite(annual)) { positionError.textContent = 'Dividend is outside the supported range.'; return; }
+  els.div.step = 'any';
+  els.divNum.step = 'any';
+  if (annual > Number(els.div.max)) els.div.max = String(annual);
+  els.divNum.max = els.div.max;
+  els.div.value = String(annual);
   positionError.textContent = '';
-  setAnnualDividend((isTotal ? amount / positionQty : amount) * 4);
+  update();
 }
 function renderPosition(r) {
-  const qty = positionQty;
-  const cost = r.purchasePrice * qty;
-  positionCost.value = cost.toFixed(2);
-  positionQuantity.value = String(qty);
-  quarterShare.value = String(Number((r.annualDividend / 4).toFixed(8)));
-  quarterTotal.value = String(Number((r.annualDividend / 4 * qty).toFixed(8)));
-  const show = (id, text) => { document.getElementById(id).textContent = text; };
-  show('pos-qty-display', qty.toLocaleString(undefined, {maximumFractionDigits: 6}));
-  show('pos-cost-display', fmt.money(cost));
-  show('pos-quarter-share', '$' + (r.annualDividend / 4).toFixed(4));
-  show('pos-quarter-total', fmt.money(r.annualDividend / 4 * qty));
-  show('pos-annual-total', fmt.money(r.annualDividend * qty));
-  show('pos-conv-shares', (r.convRate * qty).toLocaleString(undefined, {maximumFractionDigits: 4}) + ' sh');
-  show('pos-conv-value', fmt.money(r.convValue * qty));
-  const signedMoney = value => (value < 0 ? '−$' : '+$') + Math.abs(value).toFixed(2);
-  const setGain = (id, value) => {
-    const el = document.getElementById(id);
-    el.textContent = signedMoney(value);
-    el.className = 'breakdown-value tabular ' + (value >= 0 ? 'positive-text' : 'negative-text');
-  };
-  setGain('pos-cap-gain', r.capitalGain * qty);
-  show('pos-dividends', fmt.money(r.totalDividends * qty));
-  setGain('pos-profit', (r.convValue + r.totalDividends - r.purchasePrice) * qty);
+  syncField(costInput, r.purchasePrice * positionQty);
+  syncField(qtyInput, positionQty);
+  syncField(quarterShare, r.annualDividend / 4);
+  syncField(quarterTotal, r.annualDividend / 4 * positionQty);
+  const signed = value => (value < 0 ? '−$' : '+$') + Math.abs(value).toFixed(2);
+  const rows = [
+    ['Quantity Purchased', positionQty.toLocaleString(undefined, {maximumFractionDigits: 6})],
+    ['Total Purchase Amount', fmt.money(r.purchasePrice * positionQty)],
+    ['Quarterly Dividend / Share', '$' + (r.annualDividend / 4).toFixed(4)],
+    ['Quarterly Position Dividend', fmt.money(r.annualDividend / 4 * positionQty)],
+    ['Annual Position Dividend', fmt.money(r.annualDividend * positionQty)],
+    ['Projected Common Shares at Conversion', (r.convRate * positionQty).toFixed(4)],
+    ['Projected Conversion Value', fmt.money(r.convValue * positionQty)],
+    ['Position Capital Gain / (Loss)', signed(r.capitalGain * positionQty)],
+    ['Projected Holding-Period Dividends', fmt.money(r.totalDividends * positionQty)],
+    ['Projected Total Profit / (Loss)', signed((r.convValue + r.totalDividends - r.purchasePrice) * positionQty)]
+  ];
+  const row = ([label, value]) => `<div class="breakdown-item"><span class="breakdown-label">${label}</span><span class="breakdown-value tabular">${value}</span></div>`;
+  document.getElementById('position-summary').innerHTML = `<div>${rows.slice(0, 5).map(row).join('')}</div><div>${rows.slice(5).map(row).join('')}</div>`;
 }
-positionCost.addEventListener('change', readPosition);
-positionQuantity.addEventListener('change', readPosition);
-quarterShare.addEventListener('change', () => readQuarterly(quarterShare, false));
-quarterTotal.addEventListener('change', () => readQuarterly(quarterTotal, true));
+els.pp.addEventListener('input', () => editPurchase('price', els.pp));
+els.ppNum.addEventListener('input', () => editPurchase('price', els.ppNum));
+qtyInput.addEventListener('input', () => editPurchase('qty', qtyInput));
+costInput.addEventListener('input', () => editPurchase('cost', costInput));
+for (const input of [els.ppNum, qtyInput, costInput]) input.addEventListener('blur', () => update());
+quarterShare.addEventListener('input', () => editQuarter(quarterShare, false));
+quarterTotal.addEventListener('input', () => editQuarter(quarterTotal, true));
+for (const input of [quarterShare, quarterTotal]) input.addEventListener('blur', () => update());
 
 initPayoffChart();
 initReturnChart();
